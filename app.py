@@ -44,9 +44,10 @@ def invoke_agent(payload: InvokeRequest) -> InvokeResponse:
 
         if not reply:
             reply = "Agent returned an empty response."
-
+        print("Agent reply:", reply)
         return InvokeResponse(reply=reply)
     except HTTPException:
         raise
     except Exception as exc:
+        print("Error during agent invocation:", exc)
         raise HTTPException(status_code=500, detail=f"Agent invocation failed: {exc}") from exc
