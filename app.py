@@ -38,6 +38,24 @@ def _client_identifier(request: Request) -> str:
     return "unknown-client"
 
 
+def _enforce_invoke_cooldown(request: Request) -> None:
+    client_id = _client_identifier(request)
+    now = monotonic()
+
+    with _cooldown_lock:
+        last_invoke = _last_invoke_by_client.get(client_id)
+        if last_invoke is not None:
+            elapsed = now - last_invoke
+            if elapsed < COOLDOWN_SECONDS:
+                retry_after_seconds = max(1, int(COOLDOWN_SECONDS - elapsed + 0.999))
+                raise HTTPException(
+                    status_code=429,
+                    detail=f"Cooldown active. Try again in {retry_after_seconds} second(s).",
+                    headers={"Retry-After": str(retry_after_seconds)},
+                )
+        _last_invoke_by_client[client_id] = now
+
+
 
 
 @app.get("/health")
@@ -48,21 +66,7 @@ def health() -> dict[str, str]:
 @app.post("/invoke", response_model=InvokeResponse)
 def invoke_agent(payload: InvokeRequest, request: Request) -> InvokeResponse:
     try:
-        client_id = _client_identifier(request)
-        now = monotonic()
-
-        with _cooldown_lock:
-            last_invoke = _last_invoke_by_client.get(client_id)
-            if last_invoke is not None:
-                elapsed = now - last_invoke
-                if elapsed < COOLDOWN_SECONDS:
-                    retry_after_seconds = max(1, int(COOLDOWN_SECONDS - elapsed + 0.999))
-                    raise HTTPException(
-                        status_code=429,
-                        detail=f"Cooldown active. Try again in {retry_after_seconds} second(s).",
-                        headers={"Retry-After": str(retry_after_seconds)},
-                    )
-            _last_invoke_by_client[client_id] = now
+        _enforce_invoke_cooldown(request)
 
         result = react_graph_memory.invoke({"messages": [("user", payload.message)]}, config=config)
         messages = result.get("messages", [])
