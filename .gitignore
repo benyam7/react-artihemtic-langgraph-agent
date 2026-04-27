@@ -20,5 +20,4 @@ env/
 # Logs
 *.log
 .langgraph_api/
-
-
+plan.md
