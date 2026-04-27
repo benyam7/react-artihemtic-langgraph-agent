@@ -5,5 +5,5 @@ langchain-core
 langchain-community
 langchain-openai
 langchain-deepseek
-fastapi
+fastapi[standard]
 uvicorn[standard]
