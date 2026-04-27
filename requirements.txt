@@ -3,8 +3,9 @@ langgraph-cli[inmem]
 langgraph-prebuilt
 langchain-core
 langchain-community
-langchain-openai
+langchain
 langchain-deepseek
 python-dotenv
 fastapi[standard]
 uvicorn[standard]
+langfuse

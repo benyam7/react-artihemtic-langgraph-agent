@@ -3,7 +3,7 @@ from langchain_deepseek import ChatDeepSeek
 from langgraph.graph import START, StateGraph, MessagesState
 from langgraph.prebuilt import tools_condition, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
-
+from langfuse.langchain import CallbackHandler
 
 
 def add(a: int, b: int) -> int:
@@ -45,6 +45,7 @@ def subtract(a: int, b: int) -> int:
     return a - b
 
 tools = [add, multiply, divide, subtract]
+langfuse_handler = CallbackHandler()
 
 # Define LLM with bound tools
 llm = ChatDeepSeek(model="deepseek-chat")
@@ -53,7 +54,7 @@ llm_with_tools = llm.bind_tools(tools)
 # System message
 sys_msg = SystemMessage(content="You are a helpful assistant tasked with writing performing arithmetic on a set of inputs.")
 
-config = {"configurable": {"thread_id": "1"}}
+config = {"configurable": {"thread_id": "1"}, "callbacks": [langfuse_handler], "topic": "arithmetic_agent"}
 
 # Node
 def assistant(state: MessagesState):
