@@ -2,13 +2,9 @@ from langchain_core.messages import SystemMessage
 from langchain_deepseek import ChatDeepSeek
 from langgraph.graph import START, StateGraph, MessagesState
 from langgraph.prebuilt import tools_condition, ToolNode
-import os, getpass
 from langgraph.checkpoint.memory import MemorySaver
 
-def _set_env(var: str):
-    if not os.environ.get(var):
-        os.environ[var] = getpass.getpass(f"{var}: ")
-_set_env("DEEPSEEK_API_KEY")
+
 
 def add(a: int, b: int) -> int:
     """Adds a and b.

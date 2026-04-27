@@ -1,5 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
+import os
+from dotenv import find_dotenv, load_dotenv
+
+load_dotenv(find_dotenv(), override=False)
+
+if not os.getenv("DEEPSEEK_API_KEY"):
+    raise RuntimeError("DEEPSEEK_API_KEY must be set in the environment or .env file.")
+
 
 from arithmetic_agent import react_graph_memory
 from arithmetic_agent import config
@@ -13,6 +21,8 @@ class InvokeResponse(BaseModel):
 
 
 app = FastAPI(title="Arithmetic LangGraph Agent", version="0.1.0")
+
+
 
 
 @app.get("/health")
