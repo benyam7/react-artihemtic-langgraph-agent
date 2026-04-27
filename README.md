@@ -5,6 +5,7 @@
 - Exposes a FastAPI endpoint (`POST /invoke`) that runs a LangGraph + DeepSeek arithmetic agent.
 - Supports tool-based arithmetic: add, subtract, multiply, divide. With error handling. (example, division by zero)
 - Keeps in-memory thread state via LangGraph `MemorySaver`.
+- Sends monitoring data and traces to Langfuse.
 - Enforces per-client cooldown between `/invoke` calls (default: 10 seconds).
 
 ## Built with
@@ -13,6 +14,7 @@
 - FastAPI
 - LangGraph
 - LangChain + `langchain-deepseek`
+- Langfuse
 
 ## Run locally
 
