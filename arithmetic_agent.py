@@ -58,7 +58,6 @@ config = {"configurable": {"thread_id": "1"}, "callbacks": [langfuse_handler], "
 
 # Node
 def assistant(state: MessagesState):
-
     return {"messages": [llm_with_tools.invoke([sys_msg] + state["messages"], config=config)]}
 
 

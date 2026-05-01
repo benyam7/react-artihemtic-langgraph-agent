@@ -4,26 +4,20 @@ import os
 from threading import Lock
 from time import monotonic
 from dotenv import find_dotenv, load_dotenv
-
+from arithmetic_agent import react_graph_memory
+from arithmetic_agent import config
 load_dotenv(find_dotenv(), override=False)
 
 if not os.getenv("DEEPSEEK_API_KEY"):
     raise RuntimeError("DEEPSEEK_API_KEY must be set in the environment or .env file.")
 
-
-from arithmetic_agent import react_graph_memory
-from arithmetic_agent import config
-
 class InvokeRequest(BaseModel):
     message: str = Field(..., min_length=1, description="User input for the arithmetic agent")
-
 
 class InvokeResponse(BaseModel):
     reply: str
 
-
 app = FastAPI(title="Arithmetic LangGraph Agent", version="0.1.0")
-
 COOLDOWN_SECONDS = float(os.getenv("INVOKE_COOLDOWN_SECONDS", "10"))
 _last_invoke_by_client: dict[str, float] = {}
 _cooldown_lock = Lock()
@@ -54,8 +48,6 @@ def _enforce_invoke_cooldown(request: Request) -> None:
                     headers={"Retry-After": str(retry_after_seconds)},
                 )
         _last_invoke_by_client[client_id] = now
-
-
 
 
 @app.get("/health")
